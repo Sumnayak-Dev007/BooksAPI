@@ -23,7 +23,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/',include('api.urls')),
-    path('treasure/', include('treasures.urls')),
+    path('api/treasure/', include('treasures.urls')),
     path('api/v2/',include('BooksAPI.routers')),
     path('api/search/', include('search.urls')),
 ]

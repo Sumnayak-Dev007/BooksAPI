@@ -41,17 +41,20 @@ INSTALLED_APPS = [
     'api',
     'treasures',
     'search',
+    
 
 
     #third party packages
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -60,6 +63,13 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'BooksAPI.urls'
+
+CORS_URLS_REGEXE = r'^/api/.*'
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:50000',
+    'https://localhost:50000',
+]
 
 TEMPLATES = [
     {
