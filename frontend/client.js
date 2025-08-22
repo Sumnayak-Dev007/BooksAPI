@@ -1,7 +1,7 @@
 const baseEndpoint = "http://localhost:8000/api";
 const loginForm = document.getElementById("login-form");
-// const searchForm = document.getElementById("search-form");
 const contentContainer = document.getElementById("content-container");
+const searchForm = document.getElementById("search-form");
 
 // Login + store tokens
 function handleLogin(event) {
@@ -37,71 +37,6 @@ function handleLogin(event) {
 
 
 
-// function handleSearch(event) {
-//     event.preventDefault();
-
-//     const formData = new FormData(searchForm);         
-//     const data = Object.fromEntries(formData);         
-//     let searchParams = new URLSearchParams(data);
-//     const endpoint = `${baseEndpoint}/search/?${searchParams}`;
-//     const accessToken = localStorage.getItem("access");
-
-//     fetch(endpoint, {
-//         method: "GET",
-//         headers: {
-//             "Content-Type": "application/json",
-//             ...(accessToken && { Authorization: `Bearer ${accessToken}` })
-//         }
-//     })
-//     .then(response => {
-//         if (response.status === 401) {
-//             return response.json().then(data => {
-//                 if (data.code === "token_not_valid") {
-//                     refreshTokenAndRetry(() => handleSearch(event)); // 🔁 retry after refresh
-//                 } else {
-//                     logout();
-//                 }
-//             });
-//         }
-//         return response.json();
-//     })
-//     .then(data => {
-//         if (data && contentContainer) {
-//             contentContainer.innerHTML = "";  
-
-//             if (data.hits && Array.isArray(data.hits)) {
-//                 if (data.hits.length > 0) {
-//                     let htmlStr = "<ul>";  
-
-//                 for (let result of data.hits) {
-//             console.log("Result:", result);  
-//             htmlStr += `
-//                 <li style="margin-bottom: 1rem; border: 1px solid #ccc; padding: 1rem; border-radius: 8px;">
-//                     <strong>${result.title ?? "No Title"}</strong><br>
-//                     <small>Seller: ${result.user_username ?? "Unknown"}</small><br>
-//                     Price: ₹${result.price ?? "N/A"}<br>
-//                     Sale Price: ₹${result.sale_price ?? "N/A"}<br>
-//                     Tags: ${Array.isArray(result._tags) ? result._tags.join(", ") : "None"}
-//                 </li>
-//             `;
-//         }
-
-//         htmlStr += "</ul>";  // Close the list after the loop
-//         contentContainer.innerHTML = htmlStr;
-
-//                 } else {
-//                     contentContainer.innerHTML = "<p>No results found</p>";
-//                 }
-//             } else {
-//                 contentContainer.innerHTML = "<p>No results found</p>";
-//             }
-//         }
-//     })
-//     .catch(error => {
-//         console.error("Search Error:", error);
-//         alert("Something went wrong during Search.");
-//     });
-// }
 
 
 // Display Books
@@ -222,97 +157,169 @@ if (loginForm) {
     loginForm.addEventListener("submit", handleLogin);
 }
 
-// if (searchForm) {
-//     searchForm.addEventListener("submit", handleSearch);
+
+
+
+// async function searchBooks() {
+//   const query = document.getElementById("searchInput").value;
+//   const resultsContainer = document.getElementById("results");
+//   resultsContainer.innerHTML = "Searching...";
+
+//   try {
+//     const response = await fetch(`http://localhost:8000/api/search/?q=${encodeURIComponent(query)}`, {
+//       method: "GET",
+//       headers: {
+//         "Content-Type": "multipart/form-data",
+//       }
+//     });
+
+//     const data = await response.json();
+//     console.log("API response data:", data);
+
+//     const Books = data.results || data;  // handle paginated or direct list
+//     if (!Array.isArray(Books)) {
+//       throw new Error("Invalid data format: Expected an array of Books");
+//     }
+
+//     resultsContainer.innerHTML = "";
+
+//     if (Books.length === 0) {
+//       resultsContainer.innerHTML = "<p>No results found.</p>";
+//       return;
+//     }
+
+//     Books.forEach(Book => {
+//       const card = document.createElement("div");
+//       card.className = "Book-card";
+//       card.innerHTML = `
+//         <h3>${Book.title}</h3>
+//         <p>${Book.content || "No description available"}</p>
+//         <p><strong>Price:</strong> $${Book.price}</p>
+//       `;
+//       resultsContainer.appendChild(card);
+//     });
+
+//   } catch (error) {
+//     console.error("Search Error:", error);
+//     resultsContainer.innerHTML = `<p>Error: ${error.message}</p>`;
+//   }
 // }
 
+// window.searchBooks = searchBooks;
 
+function handleSearch(event) {
+    event.preventDefault();
 
-async function searchBooks() {
-  const query = document.getElementById("searchInput").value;
-  const resultsContainer = document.getElementById("results");
-  resultsContainer.innerHTML = "Searching...";
+    const formData = new FormData(searchForm);         
+    const data = Object.fromEntries(formData);         
+    let searchParams = new URLSearchParams(data);
+    const endpoint = `${baseEndpoint}/search/?${searchParams}`;
+    const accessToken = localStorage.getItem("access");
 
-  try {
-    const response = await fetch(`http://localhost:8000/api/search/?q=${encodeURIComponent(query)}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "multipart/form-data",
-      }
+    fetch(endpoint, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...(accessToken && { Authorization: `Bearer ${accessToken}` })
+        }
+    })
+    .then(response => {
+        if (response.status === 401) {
+            return response.json().then(data => {
+                if (data.code === "token_not_valid") {
+                    refreshTokenAndRetry(() => handleSearch(event)); // 🔁 retry after refresh
+                } else {
+                    logout();
+                }
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data && contentContainer) {
+            contentContainer.innerHTML = "";  
+
+            if (data.hits && Array.isArray(data.hits)) {
+                if (data.hits.length > 0) {
+                    let htmlStr = "<ul>";  
+
+                for (let result of data.hits) {
+            console.log("Result:", result);  
+            htmlStr += `
+                <li style="margin-bottom: 1rem; border: 1px solid #ccc; padding: 1rem; border-radius: 8px;">
+                    <strong>${result.title ?? "No Title"}</strong><br>
+                    <small>Seller: ${result.user_username ?? "Unknown"}</small><br>
+                    Price: ₹${result.price ?? "N/A"}<br>
+                    Sale Price: ₹${result.sale_price ?? "N/A"}<br>
+                    Tags: ${Array.isArray(result._tags) ? result._tags.join(", ") : "None"}
+                </li>
+            `;
+        }
+
+        htmlStr += "</ul>";  // Close the list after the loop
+        contentContainer.innerHTML = htmlStr;
+
+                } else {
+                    contentContainer.innerHTML = "<p>No results found</p>";
+                }
+            } else {
+                contentContainer.innerHTML = "<p>No results found</p>";
+            }
+        }
+    })
+    .catch(error => {
+        console.error("Search Error:", error);
+        alert("Something went wrong during Search.");
     });
-
-    const data = await response.json();
-    console.log("API response data:", data);
-
-    const Books = data.results || data;  // handle paginated or direct list
-    if (!Array.isArray(Books)) {
-      throw new Error("Invalid data format: Expected an array of Books");
-    }
-
-    resultsContainer.innerHTML = "";
-
-    if (Books.length === 0) {
-      resultsContainer.innerHTML = "<p>No results found.</p>";
-      return;
-    }
-
-    Books.forEach(Book => {
-      const card = document.createElement("div");
-      card.className = "Book-card";
-      card.innerHTML = `
-        <h3>${Book.title}</h3>
-        <p>${Book.content || "No description available"}</p>
-        <p><strong>Price:</strong> $${Book.price}</p>
-      `;
-      resultsContainer.appendChild(card);
-    });
-
-  } catch (error) {
-    console.error("Search Error:", error);
-    resultsContainer.innerHTML = `<p>Error: ${error.message}</p>`;
-  }
 }
 
-window.searchBooks = searchBooks;
 
 
-// const { liteClient: algoliasearch } = window['algoliasearch/lite'];
-// const searchClient = algoliasearch('8H1FCJWZWP', '5e9169fbedbbfbfc7aefa0e37712812a');
+if (searchForm) {
+    searchForm.addEventListener("submit", handleSearch);
+}
 
 
-// const search = instantsearch({
-//   indexName: 'suman_Book',
-//   searchClient,
-// });
-
-// search.addWidgets([
-//   instantsearch.widgets.searchBox({
-//     container: '#searchbox',
-//   }),
-
-//   instantsearch.widgets.clearRefinements({
-//     container: '#clear-refinements'
-//   }),
-
-//   instantsearch.widgets.refinementList({
-//   container: "#user-list",
-//   attribute: 'user_username'
-// }),
 
 
-//   instantsearch.widgets.hits({
-//     container: '#hits',
-//     templates: {
-//       item: `<div>
-//       <div>
-//         <b>{{#helpers.highlight}}{"attribute" : "title"}{{/helpers.highlight}}</b>
-//       </div>
-//         <p>{{#helpers.highlight}}{"attribute" : "content"}{{/helpers.highlight}}</p>
-//         <p>Seller: {{user_username}}</p>
-//         <p>₹{{price}}</p>
-//       </div>`
-//     }
-//   })
-// ]);
+const { liteClient: algoliasearch } = window['algoliasearch/lite'];
+const searchClient = algoliasearch('GXRT6SL6EW', '5bdf5c787d3c6b452e3a0c5cc55bbcf0');
 
-// search.start();
+
+const search = instantsearch({
+  indexName: 'gem_Book',
+  searchClient,
+});
+
+search.addWidgets([
+  instantsearch.widgets.searchBox({
+    container: '#searchbox',
+  }),
+
+  instantsearch.widgets.clearRefinements({
+    container: '#clear-refinements'
+  }),
+
+  instantsearch.widgets.refinementList({
+  container: "#user-list",
+  attribute: 'author_username'
+}),
+
+
+  instantsearch.widgets.hits({
+    container: '#hits',
+    templates: {
+      item: `<div>
+      <div>
+        <b>{{#helpers.highlight}}{"attribute" : "title"}{{/helpers.highlight}}</b>
+      </div>
+        <p>{{#helpers.highlight}}{"attribute" : "content"}{{/helpers.highlight}}</p>
+        <p>Seller: {{author_username}}</p>
+        <p>₹{{price}}</p>
+        {{#image_url}}<img src="{{image_url}}" alt="{{title}}" style="max-width:150px;">{{/image_url}}
+      </div>`
+    }
+  })
+]);
+
+search.start();

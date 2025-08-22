@@ -48,11 +48,17 @@ class Book(models.Model):
 
     @property
     def author_username(self):
-        return self.author.username if self.user else "Anonymous"
+        return self.author.username if self.author else "Anonymous"
 
 
     def get_discount(self):
         return "12"
+
+    @property
+    def image_url(self):
+        if self.image:
+            return f"{settings.SITE_DOMAIN}{self.image.url}"
+        return None
 
 
 

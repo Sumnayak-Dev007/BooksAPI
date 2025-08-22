@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'api',
     'treasures',
     'search',
-    
+    'algoliasearch_django',
+
 
 
     #third party packages
@@ -144,6 +145,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+SITE_DOMAIN = "http://127.0.0.1:8000"
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES':[
@@ -159,6 +161,13 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 5
 }
+
+ALGOLIA = {
+    'APPLICATION_ID': os.environ.get('ALGOLIA_APPLICATION_ID'),
+    'API_KEY': os.environ.get('ALGOLIA_API_KEY'),
+    'INDEX_PREFIX': os.environ.get('ALGOLIA_INDEX_PREFIX', 'gem'),
+}
+
 
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ["Bearer"],
