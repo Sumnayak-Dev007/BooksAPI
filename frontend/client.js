@@ -160,52 +160,64 @@ if (loginForm) {
 
 
 
-// async function searchBooks() {
-//   const query = document.getElementById("searchInput").value;
-//   const resultsContainer = document.getElementById("results");
-//   resultsContainer.innerHTML = "Searching...";
+async function searchBooks() {
+  const query = document.getElementById("searchInput").value;
+  const genre = document.getElementById("genreSelect").value;
+  const author = document.getElementById("authorSelect").value;
+  const resultsContainer = document.getElementById("results");
+  resultsContainer.innerHTML = "Searching...";
 
-//   try {
-//     const response = await fetch(`http://localhost:8000/api/search/?q=${encodeURIComponent(query)}`, {
-//       method: "GET",
-//       headers: {
-//         "Content-Type": "multipart/form-data",
-//       }
-//     });
+  // Build query string dynamically
+    const params = new URLSearchParams();
+    if (query) params.append("q", query);
+    if (genre) params.append("genre", genre);
+    if (author) params.append("author", author);
+  try {
+    const response = await fetch(`http://localhost:8000/api/search/?${params.toString()}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }
+    });
 
-//     const data = await response.json();
-//     console.log("API response data:", data);
+    const data = await response.json();
+    console.log("API response data:", data);
 
-//     const Books = data.results || data;  // handle paginated or direct list
-//     if (!Array.isArray(Books)) {
-//       throw new Error("Invalid data format: Expected an array of Books");
-//     }
+    const Books = data.results || data;  // handle paginated or direct list
+    if (!Array.isArray(Books)) {
+      throw new Error("Invalid data format: Expected an array of Books");
+    }
 
-//     resultsContainer.innerHTML = "";
+    resultsContainer.innerHTML = "";
 
-//     if (Books.length === 0) {
-//       resultsContainer.innerHTML = "<p>No results found.</p>";
-//       return;
-//     }
+    if (Books.length === 0) {
+      resultsContainer.innerHTML = "<p>No results found.</p>";
+      return;
+    }
 
-//     Books.forEach(Book => {
-//       const card = document.createElement("div");
-//       card.className = "Book-card";
-//       card.innerHTML = `
-//         <h3>${Book.title}</h3>
-//         <p>${Book.content || "No description available"}</p>
-//         <p><strong>Price:</strong> $${Book.price}</p>
-//       `;
-//       resultsContainer.appendChild(card);
-//     });
+    Books.forEach(Book => {
+      const card = document.createElement("div");
+      card.className = "Book-card";
+      card.innerHTML = `
+        <h3>${Book.title}</h3>
+  <img src="${Book.image_url || '/static/no-image.jpg'}" 
+       alt="${Book.title}" 
+       class="book-image" />
+  <p>${Book.content || "No description available"}</p>
+  <p><strong>Price:</strong> $${Book.price}</p>
+  <p><strong>Genre:</strong> ${Book.genre || "N/A"}</p>
+  <p><strong>Author:</strong> ${Book.author || "Anonymous"}</p>
+      `;
+      resultsContainer.appendChild(card);
+    });
 
-//   } catch (error) {
-//     console.error("Search Error:", error);
-//     resultsContainer.innerHTML = `<p>Error: ${error.message}</p>`;
-//   }
-// }
+  } catch (error) {
+    console.error("Search Error:", error);
+    resultsContainer.innerHTML = `<p>Error: ${error.message}</p>`;
+  }
+}
 
-// window.searchBooks = searchBooks;
+window.searchBooks = searchBooks;
 
 function handleSearch(event) {
     event.preventDefault();
@@ -305,6 +317,12 @@ search.addWidgets([
   attribute: 'author_username'
 }),
 
+  instantsearch.widgets.refinementList({
+    container: "#genre-list",  
+    attribute: "genre",
+  }),
+
+
 
   instantsearch.widgets.hits({
     container: '#hits',
@@ -315,6 +333,7 @@ search.addWidgets([
       </div>
         <p>{{#helpers.highlight}}{"attribute" : "content"}{{/helpers.highlight}}</p>
         <p>Seller: {{author_username}}</p>
+        <p>Genre: {{genre}}</p>
         <p>₹{{price}}</p>
         {{#image_url}}<img src="{{image_url}}" alt="{{title}}" style="max-width:150px;">{{/image_url}}
       </div>`

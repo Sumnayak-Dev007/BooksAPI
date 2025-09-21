@@ -8,6 +8,20 @@ User = settings.AUTH_USER_MODEL
 
 TAGS_MODEL_VALUES = ['celestial', 'fantasy', 'facts', 'plays', 'metrics']
 
+
+GENRE_CHOICES = [
+    ('fiction', 'Fiction'),
+    ('nonfiction', 'Non-Fiction'),
+    ('fantasy', 'Fantasy'),
+    ('mystery', 'Mystery'),
+    ('romance', 'Romance'),
+    ('sci-fi', 'Sci-Fi'),
+    ('biography', 'Biography'),
+    ('poetry', 'Poetry'),
+    ('philosophical', 'Philosophical'),
+    ('allegory', 'Allegory'),
+]
+
 class BookQuerySet(models.QuerySet):
     def is_public(self):
         return self.filter(public=True)
@@ -25,12 +39,14 @@ class BookManager(models.Manager):
 
 
 class Book(models.Model):
-    author = models.ForeignKey(User,on_delete=models.CASCADE)
+    author = models.CharField(max_length=150)  
+    posted_by = models.ForeignKey(User,on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     content = models.TextField(null=False,blank=False)
     image = models.ImageField(upload_to='images/',blank=True, null=True)
     price = models.DecimalField(max_digits=5,decimal_places=2,default=100.25)
     public = models.BooleanField(default=True)
+    genre = models.CharField(max_length=50, choices=GENRE_CHOICES, default='fiction')
 
     objects = BookManager()
 
@@ -47,8 +63,8 @@ class Book(models.Model):
         return "%.2f" %(float(self.price)*0.8)
 
     @property
-    def author_username(self):
-        return self.author.username if self.author else "Anonymous"
+    def username(self):
+        return self.posted_by.username if self.posted_by else "Anonymous"
 
 
     def get_discount(self):

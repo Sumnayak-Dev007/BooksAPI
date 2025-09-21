@@ -37,15 +37,15 @@ class PostAPIView(generics.CreateAPIView):
 
 class ListCreateAPIView(
     # AuthorQuerySetMixin,
-    IsStaffEditorPermissionMixins,
+    # IsStaffEditorPermissionMixins,
     generics.ListCreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BooksSerializers
-    authentication_classes = [
-    JWTAuthentication,
-    authentication.SessionAuthentication,
-    TokenAuthentication
-    ]
+    # authentication_classes = [
+    # JWTAuthentication,
+    # authentication.SessionAuthentication,
+    # TokenAuthentication
+    # ]
 
     def perform_create(self,serializer):
         title = serializer.validated_data.get('title')

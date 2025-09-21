@@ -15,29 +15,30 @@ class ProductIndex(AlgoliaIndex):
     fields = (
         'title', 
         'content',
+        'genre',
         'public',
         'price',
         'sale_price',
         'get_discount',
-        'author_username',
+        'username',
         'image_url',
     )
 
 
     settings = {
-        'searchableAttributes': ['title', 'content', 'author_username'],
+        'searchableAttributes': ['title', 'content', 'username'],
         'attributesForFaceting': [
-            'public',
-            'author_username'
+            'genre',
+            'username'
         ],
     }
 
 
     tags = 'get_tags_list'
 
-    def get_author_username(self, obj):
+    def get_username(self, obj):
         try:
-            return obj.author.username if obj.author else None
+            return obj.posted_by.username if obj.posted_by else None
         except Exception as e:
             print(f"[Algolia] Failed to get authorname for Book {obj.pk}: {e}")
             return None

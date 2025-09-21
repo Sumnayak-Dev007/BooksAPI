@@ -11,6 +11,20 @@
    
 
      <style>
+      .Book-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 10px;
+  max-width: 300px;     /* control card width */
+}
+
+.Book-card img.book-image {
+  max-width: 100%;      /* make it responsive */
+  height: auto;
+  display: block;
+  margin: 0 auto 10px auto; /* center and add space below */
+}
       .clear-btn {
     background-color: #007bff;
     color: white;
@@ -55,9 +69,22 @@ placeholder="Your Password">
 <input type="submit" value="Login" />
 </form>
 
-<!-- <h5>Search Books by Title (Django Search)</h5>
+<h5>Search Books by Title (Django Search)</h5>
 <input type="text" id="searchInput" placeholder="Search Books..." />
-<button onclick="searchBooks()">Search</button> -->
+<select id="genreSelect" name="genre">
+  <option value="">-- All Genres --</option>
+  <option value="fiction">fiction</option>
+  <option value="philosophical">philosophical</option>
+  <option value="allegory">allegory</option>
+</select>
+
+<select id="authorSelect" name="author">
+  <option value="">-- All Authors --</option>
+  <option value="poetess">poetess</option>
+  <option value="suman">suman</option>
+</select>
+
+<button onclick="searchBooks()">Search</button>
 
 
 
@@ -70,7 +97,11 @@ placeholder="Your Password">
 
 <div id="searchbox"></div>
 <div id="user-list"></div>
+<div>
+<div id="genre-list"></div>
 <div id="clear-refinements"></div>
+</div>
+
 <div id="hits"></div>
 
 <div id="results"></div>

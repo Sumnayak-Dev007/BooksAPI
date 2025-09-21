@@ -7,7 +7,7 @@ from algoliasearch.search.client import SearchClientSync
 # Create your views here.
 client = SearchClientSync("GXRT6SL6EW", "f4c5d750cdb2326dc92310895f865e2d")
 
-class SearchListView(generics.GenericAPIView):
+class SearchListAlgoliaView(generics.GenericAPIView):
     queryset = [] 
 
     def get(self, request, *args, **kwargs):
@@ -63,16 +63,28 @@ class SearchListView(generics.GenericAPIView):
         except Exception as e:
             return Response({'error': str(e)}, status=500)
 
-class SearchListDjangoView(generics.ListAPIView):
+class SearchListView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BooksSerializers
 
     def get_queryset(self, *args, **kwargs):
-        qs = super().get_queryset(*args, **kwargs)
-        q = self.request.GET.get('q')
-        results = Book.objects.none()
-        if q is not None:
-            results = qs.search(q)
-        else:
-            results = qs.filter(public=True)  # Also show only public if no query
-        return results
+            qs = super().get_queryset(*args, **kwargs)
+
+            # Search keyword
+            q = self.request.GET.get('q')
+            if q:
+                qs = qs.search(q)
+            else:
+                qs = qs.filter(public=True)  # Show only public books if no search
+
+            # Refinement filters (like Algolia refinementList)
+            genre = self.request.GET.get('genre')  # e.g. ?genre=fantasy
+            author = self.request.GET.get('author')  # e.g. ?author=suman
+
+            if genre:
+                qs = qs.filter(genre=genre)
+
+            if author:
+                qs = qs.filter(author__username=author)
+
+            return qs

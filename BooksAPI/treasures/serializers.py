@@ -5,7 +5,8 @@ from .models import Book
 
 class BooksSerializers(serializers.ModelSerializer):
     # owner = AuthorPublicSerializer(source = 'user')
-    my_author_data = serializers.SerializerMethodField(read_only=True)
+    # my_author_data = serializers.SerializerMethodField(read_only=True)
+    posted_by = serializers.CharField(source="posted_by.username", read_only=True)
     image_url = serializers.SerializerMethodField()
     my_discount = serializers.SerializerMethodField(read_only=True)
     edit_url = serializers.SerializerMethodField(read_only=True)
@@ -24,19 +25,17 @@ class BooksSerializers(serializers.ModelSerializer):
             'pk',
             'title',
             'content',
+            'genre',
+            'posted_by',
             'price',
             'sale_price',
             'my_discount',
-            'my_author_data',
             'public',
-            'image_url'
+            'image_url',
+           
         ]
 
-    def get_my_author_data(self,obj):
-        return {
-            'author_name': obj.author.username
-        }
-
+    
     def validate_title(self,value):
         qs = Book.objects.filter(title__iexact=value)
         if qs.exists():

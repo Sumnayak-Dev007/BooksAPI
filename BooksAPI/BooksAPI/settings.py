@@ -67,9 +67,13 @@ ROOT_URLCONF = 'BooksAPI.urls'
 
 CORS_URLS_REGEXE = r'^/api/.*'
 
+# CORS_ALLOWED_ORIGINS = [
+#     'http://localhost:50000',
+#     'https://localhost:50000',
+# ]
+
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:50000',
-    'https://localhost:50000',
+    "http://localhost:5173",
 ]
 
 TEMPLATES = [
@@ -148,15 +152,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SITE_DOMAIN = "http://127.0.0.1:8000"
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES':[
-        'rest_framework.authentication.SessionAuthentication',
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-        'api.authentication.TokenAuthentication',
-    ],
+    # 'DEFAULT_AUTHENTICATION_CLASSES':[
+    #     'rest_framework.authentication.SessionAuthentication',
+    #     "rest_framework_simplejwt.authentication.JWTAuthentication",
+    #     'api.authentication.TokenAuthentication',
+    # ],
 
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
-    ],
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    # ],
     
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 5
