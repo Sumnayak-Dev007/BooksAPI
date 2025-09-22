@@ -4,7 +4,7 @@ from api.serializers import AuthorPublicSerializer
 from .models import Book
 
 class BooksSerializers(serializers.ModelSerializer):
-    # owner = AuthorPublicSerializer(source = 'user')
+    
     # my_author_data = serializers.SerializerMethodField(read_only=True)
     posted_by = serializers.CharField(source="posted_by.username", read_only=True)
     image_url = serializers.SerializerMethodField()
@@ -19,19 +19,19 @@ class BooksSerializers(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = [
-            # 'owner',
-            'edit_url',
-            'url',
             'pk',
             'title',
+            'author',
             'content',
             'genre',
-            'posted_by',
             'price',
             'sale_price',
             'my_discount',
             'public',
+            'edit_url',
+            'url',
             'image_url',
+            'posted_by',
            
         ]
 
