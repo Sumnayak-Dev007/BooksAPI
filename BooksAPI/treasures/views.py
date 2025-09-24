@@ -16,6 +16,9 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 # Create your views here.
 
+class BooksGetAPIView(generics.ListAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BooksSerializers
 
 
 class BooksAPIView(generics.RetrieveAPIView):
@@ -26,34 +29,21 @@ class BooksAPIView(generics.RetrieveAPIView):
 class PostAPIView(generics.CreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BooksSerializers
+    authentication_classes = [
+    JWTAuthentication,
+    authentication.SessionAuthentication,
+    TokenAuthentication
+    ]
     
 
-    def perform_create(self,serializer):
+    def perform_create(self, serializer):
         title = serializer.validated_data.get('title')
-        content = serializer.validated_data.get('content') or None
-        if content is None:
-            content = title
-        serializer.save(content = content)
-
-class ListCreateAPIView(
-    # AuthorQuerySetMixin,
-    # IsStaffEditorPermissionMixins,
-    generics.ListCreateAPIView):
-    queryset = Book.objects.all()
-    serializer_class = BooksSerializers
-    # authentication_classes = [
-    # JWTAuthentication,
-    # authentication.SessionAuthentication,
-    # TokenAuthentication
-    # ]
-
-    def perform_create(self,serializer):
-        title = serializer.validated_data.get('title')
-        content = serializer.validated_data.get('content') or None
-        if content is None:
-            content = title
-        serializer.save(author=self.request.user,content = content)
-
+        content = serializer.validated_data.get('content') or title
+        
+        serializer.save(
+            content=content,
+            posted_by=self.request.user  
+        )
 
 
 class PutAPIView(generics.UpdateAPIView):
@@ -82,3 +72,28 @@ class DeleteAPIView(generics.DestroyAPIView):
 
     def perform_destroy(self,instance):
         super().perform_destroy(instance)
+
+
+      
+        
+# class ListCreateAPIView(
+#     # AuthorQuerySetMixin,
+#     # IsStaffEditorPermissionMixins,
+#     generics.ListCreateAPIView):
+#     queryset = Book.objects.all()
+#     serializer_class = BooksSerializers
+#     authentication_classes = [
+#     JWTAuthentication,
+#     authentication.SessionAuthentication,
+#     TokenAuthentication
+#     ]
+
+#     def perform_create(self,serializer):
+#         title = serializer.validated_data.get('title')
+#         content = serializer.validated_data.get('content') or None
+#         if content is None:
+#             content = title
+#         serializer.save(author=self.request.user,content = content)
+
+
+

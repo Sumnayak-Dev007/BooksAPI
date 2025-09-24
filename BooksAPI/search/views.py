@@ -74,8 +74,7 @@ class SearchListView(generics.ListAPIView):
             q = self.request.GET.get('q')
             if q:
                 qs = qs.search(q)
-            else:
-                qs = qs.filter(public=True)  # Show only public books if no search
+            
 
             # Refinement filters (like Algolia refinementList)
             genre = self.request.GET.get('genre')  # e.g. ?genre=fantasy
@@ -85,6 +84,6 @@ class SearchListView(generics.ListAPIView):
                 qs = qs.filter(genre=genre)
 
             if author:
-                qs = qs.filter(author__username=author)
+                qs = qs.filter(author__iexact=author)
 
             return qs
